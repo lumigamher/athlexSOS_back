@@ -1,12 +1,14 @@
 from flask import Flask, request, jsonify, render_template
 import pickle
 import numpy as np
+from flask_cors import CORS
 
 # Cargar el modelo entrenado
 with open('substitution_model.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "*"}})  # Habilitar CORS para permitir solicitudes desde diferentes orígenes
 
 @app.route('/')
 def index():
@@ -31,4 +33,4 @@ def check_substitution():
     return jsonify({'recommendation': recommendation})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, port=5000)
