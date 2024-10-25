@@ -3,7 +3,11 @@ import pickle
 import numpy as np
 from flask_cors import CORS
 
-# Cargar el modelo entrenado
+# Definir la función para calcular el rendimiento del equipo
+def calculate_team_performance(players):
+    return np.mean([player['performance'] - player['fatigue'] for player in players])
+
+# Cargar el modelo entrenado para sustitución
 with open('substitution_model.pkl', 'rb') as model_file:
     model = pickle.load(model_file)
 
@@ -31,6 +35,16 @@ def check_substitution():
         recommendation = "No se recomienda una sustitución en este momento."
     
     return jsonify({'recommendation': recommendation})
+
+@app.route('/api/team_performance', methods=['POST'])
+def team_performance():
+    data = request.get_json()
+    players = data.get('players')
+    
+    # Calcular el rendimiento del equipo
+    performance_score = calculate_team_performance(players)
+    
+    return jsonify({'performance_score': performance_score})
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
